@@ -205,18 +205,14 @@ export default function CopywritingPage() {
                                 </div>
                             )}
 
+                            {/* Rendu Markdown */}
                             {result && (
-                                <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 
-        prose prose-invert max-w-none 
-        prose-h3:text-3xl prose-h3:font-black prose-h3:tracking-tighter prose-h3:text-orange-500 prose-h3:mt-12 prose-h3:mb-6 prose-h3:uppercase
-        prose-p:text-slate-300 prose-p:text-lg prose-p:leading-relaxed prose-p:mb-6
-        prose-blockquote:border-l-4 prose-blockquote:border-orange-500 prose-blockquote:bg-orange-500/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:italic prose-blockquote:text-white
-        prose-hr:border-white/10 prose-hr:my-10
-        prose-strong:text-orange-400 prose-strong:font-extrabold
-        prose-headings:italic">
-                                    <ReactMarkdown>
-                                        {result.replaceAll('\\n', '\n')}
-                                    </ReactMarkdown>
+                                <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                                    <div className="markdown-container prose prose-invert max-w-none prose-p:leading-relaxed">
+                                        <ReactMarkdown>
+                                            {result}
+                                        </ReactMarkdown>
+                                    </div>
                                 </div>
                             )}
                         </div>

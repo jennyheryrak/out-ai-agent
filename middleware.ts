@@ -1,3 +1,5 @@
+console.log('URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+console.log('KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
