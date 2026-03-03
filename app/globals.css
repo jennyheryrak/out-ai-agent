@@ -24,3 +24,49 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+/* Style spécifique pour le conteneur Markdown de l'Oracle */
+.markdown-container {
+  @apply text-gray-200 leading-relaxed;
+}
+
+/* Espacement des paragraphes */
+.markdown-container p {
+  @apply mb-5;
+}
+
+/* Mise en avant du GRAS (Concepts clés) */
+.markdown-container strong {
+  @apply text-white font-extrabold bg-white/10 px-1 rounded-sm;
+  color: #fff;
+}
+
+/* Titres (H1, H2, H3) */
+.markdown-container h1, .markdown-container h2, .markdown-container h3 {
+  @apply text-white font-black uppercase tracking-tighter mt-8 mb-4 flex items-center gap-2;
+}
+
+.markdown-container h3 {
+  @apply text-lg border-l-4 border-red-600 pl-3; /* Petit rappel du thème Rebelle */
+}
+
+/* Listes à puces (indispensable pour tes points stratégiques) */
+.markdown-container ul {
+  @apply space-y-3 mb-6 ml-4;
+  list-style-type: none; /* On va mettre notre propre puce */
+}
+
+.markdown-container li {
+  @apply relative pl-6 before:content-['>'] before:absolute before:left-0 before:text-red-500 before:font-black before:text-xs before:top-1;
+}
+
+/* Séparateur horizontal (---) */
+.markdown-container hr {
+  @apply border-white/10 my-8;
+}
+
+/* Citations ou Blocs d'emphase */
+.markdown-container blockquote {
+  @apply border-l-2 border-gray-500 pl-4 italic text-gray-400 my-6;
+}

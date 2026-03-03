@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import ReactMarkdown from 'react-markdown'; // <--- N'oublie pas d'installer react-markdown
 
 export default function CopywritingPage() {
     const searchParams = useSearchParams();
@@ -33,21 +34,23 @@ export default function CopywritingPage() {
         fetchUser();
     }, [router]);
 
-    // CONFIGURATIONS DES OUTILS DE VENTE
+    // CONFIGURATIONS DES OUTILS DE VENTE (CIBLES N8N)
     const configs: any = {
         sales: {
             title: "Pavé de Vente Élite",
+            toolName: "Sales Page Prophet", // <--- Pour ton Switch n8n
             icon: <Zap size={32} className="text-orange-500" />,
             color: "text-orange-500",
             border: "focus:border-orange-500",
             bgBtn: "bg-orange-600 hover:bg-orange-500 shadow-orange-600/20",
             placeholderOffer: "Ex: Accompagnement High-Ticket pour consultants...",
             placeholderTarget: "Ex: Freelances bloqués à 2k€/mois...",
-            structure: "Psychologie de Vente (Hook > Pain > Solution > Order)",
+            structure: "Structure de Page de Vente Longue (AIDA + Objections)",
             promptPrefix: "Génère une landing page agressive et élitiste."
         },
         scripts: {
             title: "Sales Scripts",
+            toolName: "Closing Script", // <--- Pour ton Switch n8n
             icon: <MessageSquare size={32} className="text-blue-500" />,
             color: "text-blue-500",
             border: "focus:border-blue-500",
@@ -61,25 +64,45 @@ export default function CopywritingPage() {
 
     const current = configs[type] || configs.sales;
 
-    const handleGenerate = () => {
+    // CONNEXION RÉELLE À N8N
+    const handleGenerate = async () => {
+        if (!offer || isGenerating) return;
         setIsGenerating(true);
-        const archetypePrimary = user?.archetype?.split(' / ')[0] || "Leader";
+        setResult("");
 
-        // ALGORITHME DE RÉPONSE IA (SIMULÉ)
-        setTimeout(() => {
-            if (type === 'sales') {
-                setResult(`[ARSENAL DE VENTE - ARCHÉTYPE ${archetypePrimary.toUpperCase()}]\n\n"Le marché ne récompense pas les efforts, il récompense les systèmes."\n\n🎯 CIBLE : ${target}\n💎 OFFRE : ${offer}\n\n1. L'ACCROCHE ÉLITISTE :\n"Arrête de jouer au freelance. Commence à bâtir un empire avec ${offer}."\n\n2. LA DOULEUR :\n"Chaque jour sans ce système, tu perds de l'autorité. Tu n'as pas un problème de compétence, tu as un problème de positionnement."\n\n3. L'INJECTION IA :\nEn tant que ${archetypePrimary}, tu ne vends pas un service, tu vends une transformation radicale.\n\n4. L'ORDRE DE CLÔTURE :\n"Si tu es prêt à dominer, rejoins-nous. Sinon, regarde les autres réussir."`);
+        try {
+            const response = await fetch('https://n8n.chinese-kool.com/webhook/dd22dade-63ad-4b6f-889d-f2da6e7865d9', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    offer: offer,
+                    target: target,
+                    archetype: user?.archetype || "Rebelle / Stratège",
+                    tool: current.toolName, // On passe l'ID de l'outil
+                    type: type // 'sales' ou 'scripts'
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.output) {
+                setResult(data.output);
             } else {
-                setResult(`[SCRIPT DE CLOSING - ${archetypePrimary.toUpperCase()}]\n\nPROSPECT : "C'est un peu cher..."\n\nRÉPONSE ${archetypePrimary.toUpperCase()} :\n"Je comprends. Mais la question n'est pas le prix, c'est le coût de ne rien faire. Si on ne règle pas ${offer} aujourd'hui, où en seras-tu dans 6 mois ?"\n\nTRANSITION :\n"Mon rôle n'est pas de te convaincre, mais de te montrer comment ${target} peut enfin briser ce plafond de verre."\n\nCALL TO ACTION :\n"On commence lundi ou tu veux encore attendre ?"`);
+                setResult("### Erreur de Forge\nL'Oracle n'a pas pu générer ton script. Vérifie ton flux n8n.");
             }
+        } catch (err) {
+            console.error("Erreur de génération:", err);
+            setResult("### Connexion Interrompue\nImpossible d'atteindre l'Arsenal.");
+        } finally {
             setIsGenerating(false);
-        }, 2500);
+        }
     };
 
     if (loading) return <div className="min-h-screen bg-[#020408] flex items-center justify-center"><Loader2 className="animate-spin text-blue-600" size={40} /></div>;
 
     return (
         <div className="min-h-screen bg-[#020408] text-white font-poppins flex flex-col">
+            {/* HEADER */}
             <div className="border-b border-white/5 p-6 flex items-center justify-between bg-[#020408] z-10 sticky top-0">
                 <Link href="/dashboard" className="flex items-center gap-2 text-gray-500 hover:text-white transition-all text-xs font-black uppercase tracking-widest group">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Retour Arsenal
@@ -93,6 +116,7 @@ export default function CopywritingPage() {
             </div>
 
             <div className="flex-1 flex flex-col lg:flex-row">
+                {/* CONFIG SIDEBAR */}
                 <div className="w-full lg:w-[450px] border-r border-white/5 p-10 space-y-10 bg-[#020408]">
                     <div>
                         <div className="mb-4">{current.icon}</div>
@@ -144,6 +168,7 @@ export default function CopywritingPage() {
                     </button>
                 </div>
 
+                {/* RESULT AREA */}
                 <div className="flex-1 p-8 md:p-12 bg-[#05070A] overflow-y-auto">
                     <div className="max-w-4xl mx-auto h-full flex flex-col">
                         <div className="flex items-center justify-between mb-8">
@@ -167,7 +192,7 @@ export default function CopywritingPage() {
                             {!result && !isGenerating && (
                                 <div className="h-full flex flex-col items-center justify-center text-center opacity-20">
                                     <FileText size={48} className="mb-6 text-gray-600" />
-                                    <p className="text-xs font-black uppercase tracking-[0.3em]">En attente des paramètres de ton offre...</p>
+                                    <p className="text-xs font-black uppercase tracking-[0.3em]">En attente des paramètres...</p>
                                 </div>
                             )}
 
@@ -181,10 +206,17 @@ export default function CopywritingPage() {
                             )}
 
                             {result && (
-                                <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                                    <pre className="text-lg md:text-xl font-medium leading-relaxed text-gray-300 whitespace-pre-wrap italic font-poppins">
-                                        {result}
-                                    </pre>
+                                <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 
+        prose prose-invert max-w-none 
+        prose-h3:text-3xl prose-h3:font-black prose-h3:tracking-tighter prose-h3:text-orange-500 prose-h3:mt-12 prose-h3:mb-6 prose-h3:uppercase
+        prose-p:text-slate-300 prose-p:text-lg prose-p:leading-relaxed prose-p:mb-6
+        prose-blockquote:border-l-4 prose-blockquote:border-orange-500 prose-blockquote:bg-orange-500/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:italic prose-blockquote:text-white
+        prose-hr:border-white/10 prose-hr:my-10
+        prose-strong:text-orange-400 prose-strong:font-extrabold
+        prose-headings:italic">
+                                    <ReactMarkdown>
+                                        {result.replaceAll('\\n', '\n')}
+                                    </ReactMarkdown>
                                 </div>
                             )}
                         </div>

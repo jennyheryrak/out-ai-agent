@@ -97,6 +97,14 @@ export default function Dashboard() {
         router.push(`/dashboard/generator?type=${type}`);
     };
 
+    const handleActionOracle = (type: string, isPremium: boolean = false) => {
+        if (isPremium && !user?.isPro) {
+            setShowPaywall(true);
+            return;
+        }
+        router.push(`/dashboard/${type}`);
+    };
+
     const handleActionPRO = (type: string, isPremium: boolean = false) => {
         // ALGORITHME DE VÉRIFICATION :
         // Si l'utilisateur n'est pas PRO ET qu'il n'a plus de crédits
@@ -127,7 +135,7 @@ export default function Dashboard() {
 
                 <nav className="flex-1 space-y-2">
                     <NavItem icon={<Layout size={18} />} label="Dashboard" active />
-                    <NavItem icon={<MessageSquare size={18} />} label="Oracle IA" onClick={() => handleAction('chatbot', true)} premium={!user.isPro} />
+                    <NavItem icon={<MessageSquare size={18} />} label="Oracle IA" onClick={() => handleActionOracle('chatbot', true)} premium={!user.isPro} />
                     <NavItem icon={<Zap size={18} />} label="Communauté (9€)" onClick={() => window.open('https://t.me/...', '_blank')} />
                 </nav>
 
